@@ -1,11 +1,13 @@
 package a5;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import a5.Heap;
 import common.NotImplementedError;
 import graph.Edge;
 import graph.Node;
@@ -51,7 +53,46 @@ public class GraphAlgorithms  {
 	 */
 	public static <N extends Node<N,E>, E extends LabeledEdge<N,E,Integer>>
 	List<N> shortestPath(N start, N end) {
+	
+		
+		Heap<N,Integer> worklist = new Heap<N,Integer>(c);
+		worklist.add(start, 0);
+		Set<N>   visited  = new HashSet<N>();
+		
+		while (worklist.size() > 0) {
+			N next = worklist.poll();
+			visited.add(next);
+			for (N neighbor : next.outgoing().keySet()) {
+				// Here we need a way to tell if neighbor is in worklist
+				// (or if neighbor is in some set of unreached nodes,
+				// therefore not in worklist.
+				
+				/* if neighbor is in worklist {
+				 * 		update distance of neighbor from start;
+				 * } else  {
+				 * 		add neighbor to worklist with its distance;
+				 * }
+				 */
+			}
+		}
+		
 		throw new NotImplementedError();
+	}
+	
+	static Comparator<Integer> c = (int1, int2) -> {return int2 - int1;};
+	
+	//Make class with node, distance, and previous node
+	/**
+	 * NDP is a representation of a node in relation to the shortest path
+	 * algorithm that includes its distance from the start and the NDP prior
+	 * along its path.
+	 * 
+	 * @param <N>
+	 */
+	public class NDP<N> {
+		int distance;
+		N previous;
+		boolean b;
 	}
 	
 }
