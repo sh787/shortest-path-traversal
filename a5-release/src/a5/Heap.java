@@ -190,7 +190,7 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 	private void swap(int a, int b) {
 		E tempA = data.get(a);
 		P tempAPrior = priorityMap.get(a);
-		System.out.println("swap " + tempA + " with " + data.get(b));
+		//System.out.println("swap " + tempA + " with " + data.get(b));
 		priorityMap.replace(a, priorityMap.get(b));
 		priorityMap.replace(b, tempAPrior);
 		locationMap.replace(tempA, b);
