@@ -56,39 +56,52 @@ public class GraphAlgorithms  {
 	 */
 	public static <N extends Node<N,E>, E extends LabeledEdge<N,E,Integer>>
 	List<N> shortestPath(N start, N end) {
-	
 		
 		Heap<N,Integer> worklist = new Heap<N,Integer>(Collections.reverseOrder());
 		worklist.add(start, 0);
 		Set<N>   visited  = new HashSet<N>();
-		List<N>  result   = new ArrayList<N>();
+		//List<N>  result   = new ArrayList<N>();
 		//Map <N, N> previous = new HashMap <N, N>();
+		//Map <N, NodeDP> info = new HashMap<N, NodeDP>();
 		Map <N, Integer> visitedEdges = new HashMap<N, Integer>();
+		Map <N, N> backPointers = new HashMap<N, N>();
 		
 		while (worklist.size() > 0) {
+			//NodeDP<N> ndp = new NodeDP<N>(worklist.getPriority(worklist.peek()), worklist.peek(), true);
 			visitedEdges.put(worklist.peek(), worklist.getPriority(worklist.peek()));
 			N next = worklist.poll();
 			visited.add(next);
-			result.add(next);
+			//result.add(next);
 			for (N neighbor : next.outgoing().keySet()) {
-				/* if neighbor is in worklist {
-				 * 		update distance of neighbor from start;
-				 * } else  {
-				 * 		add neighbor to worklist with its distance;
-				 * }
-				 */
 				int p = visitedEdges.get(next) + next.outgoing().get(neighbor).label();
-				if (worklist.contains(neighbor)) {
-					if (p < worklist.getPriority(neighbor)) {
-						worklist.changePriority(neighbor, p);
+				if (!visited.contains(neighbor)) {
+					if (worklist.contains(neighbor)) {
+						if (p < worklist.getPriority(neighbor)) {
+							worklist.changePriority(neighbor, p);
+							backPointers.put(neighbor, next);
+						}
+					} else {
+						worklist.add(neighbor, p);
+						backPointers.put(neighbor, next);
 					}
-				} else {
-					worklist.add(neighbor, p);
 				}
 			}
 		}
 		
-		return result;
+		List<N>  result2   = new ArrayList<N>();
+		N trace = end;
+		result2.add(trace);
+		while (backPointers.get(trace) != null) {
+			result2.add(0, backPointers.get(trace));
+			trace = backPointers.get(trace);
+		}
+		
+		if ((!start.equals(end)) && (!visitedEdges.containsKey(end))) {
+			return new ArrayList<N>();
+		}
+		
+		return result2;
+		
 	}
 	
 	//Make class with node, distance, and previous node
@@ -99,10 +112,17 @@ public class GraphAlgorithms  {
 	 * 
 	 * @param <N>
 	 */
-	public class NDP<N> {
+	public class NodeDP<N> {
 		int distance;
 		N previous;
 		boolean visited;
+		
+		public NodeDP(int d, N p, boolean v) {
+			this.distance = d;
+			this.previous = p;
+			this.visited = v;
+		}
+		
 	}
 	
 }
