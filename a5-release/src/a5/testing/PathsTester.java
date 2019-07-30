@@ -115,6 +115,16 @@ public class PathsTester {
 		assertEquals(34, pd.size);
 		checkAllShortestPaths(g, pd);
 	}
+	
+	@Test
+	/** Test all shortest paths on map ...t */
+	public void specificTest70MapTestBoard2() {
+		Graph g= getGraph("info/Maps/TestBoard2.txt");
+		PathData pd= new PathData("info/Maps/TestBoard2distances.txt", g);
+		assertEquals(34, pd.size);
+		List<NodeData> list= Adapter.shortest(pd.nodes[15], pd.nodes[1]);
+		assertEquals(pd.dist[15][1], pathSum(list));
+	}
 
 	@Test
 	/** Test all shortest paths on map seeded with 128 */
@@ -123,6 +133,16 @@ public class PathsTester {
 		PathData pd= new PathData("info/Maps/seed128distances.txt", g);
 		assertEquals(50, pd.size);
 		checkAllShortestPaths(g, pd);
+	}
+	
+	@Test
+	/** Test all shortest paths on map seeded with 128 */
+	public void specificTest80MapSeeded128() {
+		Graph g= getGraph("info/Maps/seed128.txt");
+		PathData pd= new PathData("info/Maps/seed128distances.txt", g);
+		assertEquals(50, pd.size);
+		List<NodeData> list= Adapter.shortest(pd.nodes[13], pd.nodes[0]);
+		assertEquals(pd.dist[13][0], pathSum(list));
 	}
 
 	/** Check the shortest paths in g from each node to each node, as given by <br>
@@ -133,6 +153,12 @@ public class PathsTester {
 			for (int c= 0; c < pd.size; c= c + 1) {
 				// check shortest path distance from node r to node c
 				List<NodeData> list= Adapter.shortest(pd.nodes[r], pd.nodes[c]);
+				if (pd.dist[r][c]!=(pathSum(list))) {
+					System.out.print(pd.nodes[r] + " " + r + " ");
+					System.out.println(pd.nodes[c] + " " + c);
+					System.out.println("pd dist" + pd.dist[r][c]);
+					System.out.println("pathsum" + pathSum(list));
+				}
 				assertEquals(pd.dist[r][c], pathSum(list));
 
 				// check that first node of path and last node of path are correct
