@@ -1,9 +1,12 @@
 package a5;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -55,31 +58,38 @@ public class GraphAlgorithms  {
 	List<N> shortestPath(N start, N end) {
 	
 		
-		Heap<N,Integer> worklist = new Heap<N,Integer>(c);
+		Heap<N,Integer> worklist = new Heap<N,Integer>(Collections.reverseOrder());
 		worklist.add(start, 0);
 		Set<N>   visited  = new HashSet<N>();
+		List<N>  result   = new ArrayList<N>();
+		//Map <N, N> previous = new HashMap <N, N>();
+		Map <N, Integer> visitedEdges = new HashMap<N, Integer>();
 		
 		while (worklist.size() > 0) {
+			visitedEdges.put(worklist.peek(), worklist.getPriority(worklist.peek()));
 			N next = worklist.poll();
 			visited.add(next);
+			result.add(next);
 			for (N neighbor : next.outgoing().keySet()) {
-				// Here we need a way to tell if neighbor is in worklist
-				// (or if neighbor is in some set of unreached nodes,
-				// therefore not in worklist.
-				
 				/* if neighbor is in worklist {
 				 * 		update distance of neighbor from start;
 				 * } else  {
 				 * 		add neighbor to worklist with its distance;
 				 * }
 				 */
+				int p = visitedEdges.get(next) + next.outgoing().get(neighbor).label();
+				if (worklist.contains(neighbor)) {
+					if (p < worklist.getPriority(neighbor)) {
+						worklist.changePriority(neighbor, p);
+					}
+				} else {
+					worklist.add(neighbor, p);
+				}
 			}
 		}
 		
-		throw new NotImplementedError();
+		return result;
 	}
-	
-	static Comparator<Integer> c = (int1, int2) -> {return int2 - int1;};
 	
 	//Make class with node, distance, and previous node
 	/**
@@ -92,7 +102,7 @@ public class GraphAlgorithms  {
 	public class NDP<N> {
 		int distance;
 		N previous;
-		boolean b;
+		boolean visited;
 	}
 	
 }
