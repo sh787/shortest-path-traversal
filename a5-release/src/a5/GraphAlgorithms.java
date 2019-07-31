@@ -10,11 +10,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import a5.Heap;
+import a4.Heap;
 import common.NotImplementedError;
 import graph.Edge;
 import graph.Node;
+//import ourProjectA4.Heap;
 import graph.LabeledEdge;
+//import group1a4.Heap;
+//import group2a4.Heap;
 
 /** We've provided depth-first search as an example; you need to implement Dijkstra's algorithm.
  */
@@ -59,24 +62,17 @@ public class GraphAlgorithms  {
 		
 		Heap<N,Integer> worklist = new Heap<N,Integer>(Collections.reverseOrder());
 		worklist.add(start, 0);
-		Set<N>   visited  = new HashSet<N>();
-		//List<N>  result   = new ArrayList<N>();
-		//Map <N, N> previous = new HashMap <N, N>();
-		//Map <N, NodeDP> info = new HashMap<N, NodeDP>();
 		Map <N, Integer> visitedEdges = new HashMap<N, Integer>();
 		Map <N, N> backPointers = new HashMap<N, N>();
 		
 		while (worklist.size() > 0) {
-			//NodeDP<N> ndp = new NodeDP<N>(worklist.getPriority(worklist.peek()), worklist.peek(), true);
 			visitedEdges.put(worklist.peek(), worklist.getPriority(worklist.peek()));
 			N next = worklist.poll();
-			visited.add(next);
-			//result.add(next);
 			for (N neighbor : next.outgoing().keySet()) {
 				int p = visitedEdges.get(next) + next.outgoing().get(neighbor).label();
-				if (!visited.contains(neighbor)) {
+				if (!visitedEdges.containsKey(neighbor)) {
 					if (worklist.contains(neighbor)) {
-						if (p < worklist.getPriority(neighbor)) {
+						if (Collections.reverseOrder().compare(p, worklist.getPriority(neighbor)) > 0) {
 							worklist.changePriority(neighbor, p);
 							backPointers.put(neighbor, next);
 						}
@@ -85,14 +81,16 @@ public class GraphAlgorithms  {
 						backPointers.put(neighbor, next);
 					}
 				}
+				
+				System.out.println(worklist);
 			}
 		}
 		
-		List<N>  result2   = new ArrayList<N>();
+		List<N>  result   = new ArrayList<N>();
 		N trace = end;
-		result2.add(trace);
+		result.add(trace);
 		while (backPointers.get(trace) != null) {
-			result2.add(0, backPointers.get(trace));
+			result.add(0, backPointers.get(trace));
 			trace = backPointers.get(trace);
 		}
 		
@@ -100,28 +98,7 @@ public class GraphAlgorithms  {
 			return new ArrayList<N>();
 		}
 		
-		return result2;
-		
-	}
-	
-	//Make class with node, distance, and previous node
-	/**
-	 * NDP is a representation of a node in relation to the shortest path
-	 * algorithm that includes its distance from the start and the NDP prior
-	 * along its path.
-	 * 
-	 * @param <N>
-	 */
-	public class NodeDP<N> {
-		int distance;
-		N previous;
-		boolean visited;
-		
-		public NodeDP(int d, N p, boolean v) {
-			this.distance = d;
-			this.previous = p;
-			this.visited = v;
-		}
+		return result;
 		
 	}
 	
