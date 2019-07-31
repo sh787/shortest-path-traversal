@@ -14,10 +14,8 @@ import a4.Heap;
 import common.NotImplementedError;
 import graph.Edge;
 import graph.Node;
-//import ourProjectA4.Heap;
 import graph.LabeledEdge;
-//import group1a4.Heap;
-//import group2a4.Heap;
+
 
 /** We've provided depth-first search as an example; you need to implement Dijkstra's algorithm.
  */
