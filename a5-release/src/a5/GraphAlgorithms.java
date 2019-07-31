@@ -62,10 +62,28 @@ public class GraphAlgorithms  {
 		worklist.add(start, 0);
 		Map <N, Integer> visitedEdges = new HashMap<N, Integer>();
 		Map <N, N> backPointers = new HashMap<N, N>();
+		List<N>  result   = new ArrayList<N>();
+		N trace = end;
 		
 		while (worklist.size() > 0) {
 			visitedEdges.put(worklist.peek(), worklist.getPriority(worklist.peek()));
 			N next = worklist.poll();
+			
+			if (next.equals(end)) {
+				result.add(trace);
+				
+				while (backPointers.get(trace) != null) {
+					result.add(0, backPointers.get(trace));
+					trace = backPointers.get(trace);
+				}
+				
+				if ((!start.equals(end)) && (!visitedEdges.containsKey(end))) {
+					return new ArrayList<N>();
+				}
+				
+				return result;
+			}
+			
 			for (N neighbor : next.outgoing().keySet()) {
 				int p = visitedEdges.get(next) + next.outgoing().get(neighbor).label();
 				if (!visitedEdges.containsKey(neighbor)) {
@@ -73,27 +91,16 @@ public class GraphAlgorithms  {
 						if (Collections.reverseOrder().compare(p, worklist.getPriority(neighbor)) > 0) {
 							worklist.changePriority(neighbor, p);
 							backPointers.put(neighbor, next);
+							
 						}
 					} else {
 						worklist.add(neighbor, p);
 						backPointers.put(neighbor, next);
+						
 					}
 				}
-				
-				System.out.println(worklist);
 			}
-		}
-		
-		List<N>  result   = new ArrayList<N>();
-		N trace = end;
-		result.add(trace);
-		while (backPointers.get(trace) != null) {
-			result.add(0, backPointers.get(trace));
-			trace = backPointers.get(trace);
-		}
-		
-		if ((!start.equals(end)) && (!visitedEdges.containsKey(end))) {
-			return new ArrayList<N>();
+			
 		}
 		
 		return result;
