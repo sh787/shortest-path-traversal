@@ -1,4 +1,4 @@
-package a5;
+package a4;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,6 +50,17 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 		return priorityMap.get(locationMap.get(e));
 	}
 	
+	/** Added this method to Group 5's Heap implementation.
+	 * Returns string of Heap in the format of (Element, Priority)
+	 */
+	public String toString() {
+		String prt = "";
+		for (E e: data) {
+			prt += "(" + e + ", " + priorityMap.get(locationMap.get(e)) + ")";
+		}
+		
+		return prt;
+	}
 	
 	@Override
 	/**
@@ -99,14 +110,16 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 		if(locationMap.containsKey(e))
 			throw new IllegalArgumentException();
 
-		int index = data.size();
+		//int index = data.size();
 		data.add(e);
-		locationMap.put(e, index);
-		priorityMap.put(index, p);
-		bubbleUp(index);
+		locationMap.put(e, data.indexOf(e));
+		priorityMap.put(data.indexOf(e), p);
+		bubbleUp(data.indexOf(e));
 	}
 	
 	/**
+	 * Note: Changed this method when debugging the Heap.
+	 * 
 	 * Change the priority associated with e to p.
 	 *
 	 * @throws NoSuchElementException if this does not contain e.
@@ -116,14 +129,14 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 		if(!(this.data.contains(e)))
 			throw new NoSuchElementException("ArrayList does not contain e.");
 		int index = locationMap.get(e);
-		P prevPrio = priorityMap.get(index);
+		//P prevPrio = priorityMap.get(index);
 		priorityMap.replace(index, p);
-		if(comparator.compare(prevPrio, p)>0) {
+		//if(comparator.compare(prevPrio, p)>0) {
 			bubbleUp(index);
-		}
-		else if(comparator.compare(prevPrio, p)<0) {
+		//}
+		//else if(comparator.compare(prevPrio, p)<0) {
 			bubbleDown(index);
-		}
+		//}
 		
 	}
 	
@@ -157,16 +170,20 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 	}
 	
 	/**
+	 * Note: Changed this method to debug Heap priority ordering.
+	 * 
 	 * make sure that the element at the given index satisfies the heap invariant
 	 * and check whether the element can rise to an upper level
 	 * @param index
 	 */
 	private void bubbleUp(int index) {
-		for(;parent(index)!= -1; index = parent(index)) 
-			if(comparator.compare(priorityMap.get(index), priorityMap.get(parent(index))) > 0)
+	
+		if (parent(index)!= -1) {
+			if(comparator().compare(priorityMap.get(index), priorityMap.get(parent(index))) > 0) {
 				swap(index, parent(index));
-			else
-				break;
+				bubbleUp(parent(index));
+			}
+		}
 	}
 	
 	/** returns depth of item at index i
@@ -189,13 +206,15 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 	 */
 	private void swap(int a, int b) {
 		E tempA = data.get(a);
+		E tempB = data.get(b);
 		P tempAPrior = priorityMap.get(a);
+		P tempBPrior = priorityMap.get(b);
 		//System.out.println("swap " + tempA + " with " + data.get(b));
-		priorityMap.replace(a, priorityMap.get(b));
+		priorityMap.replace(a, tempBPrior);
 		priorityMap.replace(b, tempAPrior);
 		locationMap.replace(tempA, b);
-		locationMap.replace(data.get(b), a);
-		data.set(a, data.get(b));
+		locationMap.replace(tempB, a);
+		data.set(a, tempB);
 		data.set(b, tempA);
 	}
 	
@@ -221,28 +240,47 @@ public class Heap<E, P> implements PriorityQueue<E, P>{
 		return (temp < size()) ? temp : -1;
 	}
 	
-	/** returns index of right child of item at index i
+	/** 
+	 * Note: Changed this method's structure when debugging the Heap.
+	 * 
+	 * returns index of right child of item at index i
 	 * 
 	 * @param i < data.size()
 	 * @return -1 if the index is invalid
 	 */ 
 	private int right(int index){
-		int temp = left(index);
+		/*int temp = left(index);
 		if(temp == -1)
 			return temp;
 		
-		return (temp + 1 < size()) ? temp + 1 : -1;
+		return (temp + 1 < size()) ? temp + 1 : -1;*/
+		if(index < 0 || index >= size())
+			return -1;
+		int temp = 2 * index + 2;
+		return (temp < size()) ? temp : -1;
 	}
 	
-	/** returns the index of the parent of item at index i
+	/** 
+	 * Note: Changed this method's structure when debugging the Heap.
+	 * 
+	 * returns the index of the parent of item at index i
 	 * 
 	 * @param i < data.size()
 	 * @return integer
 	 */
 	private int parent(int index) {
-		if(index > 0 && index < size())
+		/*if(index >= 0 && index < size())
 			return (index - 1) / 2;
 		else
-			return -1;
+			return -1;*/
+		if (index%2 != 0) {
+			if ((index - 1)/2 >= 0) {
+				return (index - 1)/2;
+			} else return -1;
+		} else if (index%2 == 0) {
+			if ((index - 2)/2 >= 0) {
+				return (index - 2)/2;
+			} else return -1;
+		} else return -1;
 	}
 }
